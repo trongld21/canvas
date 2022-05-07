@@ -1,0 +1,13 @@
+{
+    "name": "canvas_basic",
+    "version": "1.0.0",
+    "type": "module",
+    "description": "yarn for project",
+    "main": "index.js",
+    "repository": "https://github.com/trongld21/canvas.git",
+    "author": "ducctrong <trongld21@gmail.com>",
+    "license": "MIT",
+    "dependencies": {
+        "dat.gui": "^0.7.9"
+    }
+}
