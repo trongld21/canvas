@@ -1,4 +1,5 @@
 const canvas = document.querySelector('canvas');
+const scoreEl = document.getElementById('scoreEl');
 const c = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
@@ -239,6 +240,7 @@ let game = {
     over: false,
     active: true
 }
+let score = 0;
 
 for (let i = 0; i < 100; i++) {
     particles.push(new Particle(Math.random() * canvas.width, Math.random() * canvas.height, 0, 0.3, Math.random() * 2, 'white'))
@@ -318,6 +320,8 @@ function animate() {
                     projectile.position.y + projectile.radius >= invander.position.y) {
 
                     setTimeout(() => {
+                        score += 100;
+                        scoreEl.innerHTML = score;
                         grid.remove(i);
                         projectiles.splice(j, 1);
                         createParticles({ object: invander, color: '', fades: true });
