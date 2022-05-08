@@ -55,7 +55,7 @@ class Projectile {
             x: vx,
             y: vy
         };
-        this.radius = 3;
+        this.radius = 4;
     }
     draw() {
         c.beginPath();
@@ -117,7 +117,7 @@ class Grid {
             x: 3,
             y: 10
         }
-        this.invaders = []
+        this.invaders = [];
         const rows = Math.floor(Math.random() * 10 + 5);
         const colums = Math.floor(Math.random() * 5 + 2);
         this.width = colums * 30;
@@ -134,16 +134,18 @@ class Grid {
         this.position.y += this.velocity.y;
         this.velocity.y = 0;
         if (this.position.x + this.width >= canvas.width || this.position.x <= 0) {
-            console.log('to left')
             this.velocity.x *= -1;
             this.velocity.y = 10;
         }
+    }
+    remove(index) {
+        this.invaders.splice(index, 1);
     }
 }
 
 const player = new Player();
 const projectiles = [];
-const grids = [];
+const grids = [new Grid()];
 const keys = {
     a: {
         pressed: false
@@ -166,10 +168,10 @@ function animate() {
     c.fillRect(0, 0, canvas.width, canvas.height);
     player.draw();
     player.update();
-    projectiles.forEach(projectile => {
+    projectiles.forEach((projectile, index) => {
         if (projectile.position.y + projectile.radius <= 0) {
             setTimeout(() => {
-                projectile.splice(index, 1);
+                projectiles.splice(index, 1);
             }, 0)
         } else {
             projectile.update();
@@ -177,8 +179,21 @@ function animate() {
     })
     grids.forEach(grid => {
         grid.update();
-        grid.invaders.forEach(invander => {
+        grid.invaders.forEach((invander, i) => {
             invander.update({ velocity: grid.velocity });
+            projectiles.forEach((projectile, j) => {
+                if (projectile.position.y - projectile.radius <= invander.position.y + invander.height &&
+                    projectile.position.x + projectile.radius >= invander.position.x &&
+                    projectile.position.x - projectile.radius <= invander.position.x + invander.width &&
+                    projectile.position.y + projectile.radius >= invander.position.y) {
+                    console.log(i, j)
+                    setTimeout(() => {
+                        grid.remove(i);
+                        projectiles.splice(j, 1);
+                    }, 0)
+
+                }
+            })
         })
     })
     if (keys.a.pressed && player.position.x >= 0) {
@@ -193,10 +208,8 @@ function animate() {
     }
     if (frames % randomInterval === 0) {
         randomInterval = Math.floor(Math.random() * 500 + 500);
-        console.log(randomInterval);
         grids.push(new Grid());
     }
-    console.log(frames);
 
     frames++;
 }
@@ -206,15 +219,12 @@ animate();
 addEventListener('keydown', ({ key }) => {
     switch (key) {
         case 'a':
-            console.log('left ' + key);
             keys.a.pressed = true;
             break;
         case 'd':
-            console.log('right ' + key);
             keys.d.pressed = true;
             break;
         case ' ':
-            console.log('space ' + key);
             projectiles.push(new Projectile(player.position.x + (player.width / 2), player.position.y, 0, -5))
             keys.space.pressed = true;
             break;
@@ -224,15 +234,12 @@ addEventListener('keydown', ({ key }) => {
 addEventListener('keyup', ({ key }) => {
     switch (key) {
         case 'a':
-            console.log('left');
             keys.a.pressed = false;
             break;
         case 'd':
-            console.log('right');
             keys.d.pressed = false;
             break;
         case ' ':
-            console.log('space');
             keys.space.pressed = false;
             break;
     }
