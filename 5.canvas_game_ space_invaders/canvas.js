@@ -33,7 +33,6 @@ class Player {
             c.translate(player.position.x + (player.width / 2), player.position.y + (player.height / 2));
             c.rotate(this.rotation);
             c.translate(-player.position.x + -(player.width / 2), -player.position.y + -(player.height / 2));
-
             c.drawImage(this.image, this.position.x, this.position.y, this.width, this.height);
             c.restore();
         }
@@ -47,9 +46,15 @@ class Player {
 }
 
 class Projectile {
-    constructor(position, velocity) {
-        this.position = position;
-        this.velocity = velocity;
+    constructor(px, py, vx, vy) {
+        this.position = {
+            x: px,
+            y: py
+        };
+        this.velocity = {
+            x: vx,
+            y: vy
+        };
         this.radius = 3;
     }
     draw() {
@@ -63,21 +68,11 @@ class Projectile {
         this.draw();
         this.position.x += this.velocity.x;
         this.position.y += this.velocity.y;
-
     }
 }
 
 const player = new Player();
-const projectiles = [new Projectile({
-    position: {
-        x: 300,
-        y: 300
-    },
-    velocity: {
-        x: 0,
-        y: 0
-    }
-})];
+const projectiles = [];
 const keys = {
     a: {
         pressed: false
@@ -98,7 +93,13 @@ function animate() {
     player.draw();
     player.update();
     projectiles.forEach(projectile => {
-        projectile.update();
+        if (projectile.position.y + projectile.radius <= 0) {
+            setTimeout(() => {
+                projectile.splice(index, 1);
+            }, 0)
+        } else {
+            projectile.update();
+        }
     })
     if (keys.a.pressed && player.position.x >= 0) {
         player.velocity.x = -7;
@@ -126,16 +127,7 @@ addEventListener('keydown', ({ key }) => {
             break;
         case ' ':
             console.log('space ' + key);
-            // projectiles.push(new Projectile({
-            //     position: {
-            //         x: player.position.x,
-            //         y: player.position.y
-            //     },
-            //     velocity: {
-            //         x: 0,
-            //         y: -5
-            //     }
-            // }))
+            projectiles.push(new Projectile(player.position.x + (player.width / 2), player.position.y, 0, -5))
             keys.space.pressed = true;
             break;
     }
