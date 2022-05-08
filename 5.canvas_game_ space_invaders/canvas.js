@@ -1,8 +1,9 @@
 const canvas = document.querySelector('canvas');
 const scoreEl = document.getElementById('scoreEl');
+const gameover = document.getElementById('control');
 const c = canvas.getContext('2d');
-canvas.width = 1024;
-canvas.height = 576;
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
 class Player {
     constructor() {
@@ -49,22 +50,29 @@ class Player {
 
 class Projectile {
     constructor(px, py, vx, vy) {
-        this.position = {
-            x: px,
-            y: py
-        };
         this.velocity = {
             x: vx,
             y: vy
         };
         this.radius = 4;
+
+        const image = new Image();
+        image.src = './img/bullet.png';
+        image.onload = () => {
+            const scale = 0.03;
+            this.image = image;
+            this.width = image.width * scale;
+            this.height = image.height * scale;
+            this.position = {
+                x: px - this.width / 2,
+                y: py - this.height
+            }
+        }
     }
     draw() {
-        c.beginPath();
-        c.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2);
-        c.fillStyle = 'red';
-        c.fill();
-        c.closePath();
+        if (this.image) {
+            c.drawImage(this.image, this.position.x, this.position.y, this.width, this.height);
+        }
     }
     update() {
         this.draw();
@@ -293,6 +301,7 @@ function animate() {
             }, 0)
             setTimeout(() => {
                 game.active = false;
+                gameover.style.display = "flex";
             }, 2000)
             createParticles({ object: player, color: 'white', fades: true });
         }
@@ -388,3 +397,26 @@ addEventListener('keyup', ({ key }) => {
             break;
     }
 })
+
+function replay() {
+    player.opacity = 1;
+
+    frames = 0;
+    randomInterval = Math.floor(Math.random() * 500 + 500);
+    game = {
+        over: false,
+        active: true
+    }
+    score = 0;
+    scoreEl.innerHTML = score;
+    gameover.style.display = "none";
+    grids.forEach((gridIndex) => {
+        grids.splice(gridIndex, grids.length);
+    })
+    projectiles.forEach((index) => {
+        setTimeout(() => {
+            projectiles.splice(index, projectiles.length);
+        }, 0)
+    })
+    animate();
+}
