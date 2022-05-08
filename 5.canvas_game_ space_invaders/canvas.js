@@ -177,7 +177,7 @@ function animate() {
             projectile.update();
         }
     })
-    grids.forEach(grid => {
+    grids.forEach((grid, gridIndex) => {
         grid.update();
         grid.invaders.forEach((invander, i) => {
             invander.update({ velocity: grid.velocity });
@@ -196,6 +196,8 @@ function animate() {
                             const lastInvander = grid.invaders[grid.invaders.length - 1];
                             grid.width = lastInvander.position.x - firstInvander.position.x + lastInvander.width
                             grid.position.x = firstInvander.position.x;
+                        } else {
+                            grids.splice(gridIndex, 1);
                         }
                     }, 0)
 
