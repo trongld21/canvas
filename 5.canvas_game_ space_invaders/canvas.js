@@ -190,6 +190,13 @@ function animate() {
                     setTimeout(() => {
                         grid.remove(i);
                         projectiles.splice(j, 1);
+
+                        if (grid.invaders.length > 0) {
+                            const firstInvander = grid.invaders[0];
+                            const lastInvander = grid.invaders[grid.invaders.length - 1];
+                            grid.width = lastInvander.position.x - firstInvander.position.x + lastInvander.width
+                            grid.position.x = firstInvander.position.x;
+                        }
                     }, 0)
 
                 }
